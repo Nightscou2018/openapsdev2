@@ -1,0 +1,19 @@
+NIGHTSCOUT_HOST=https://mstebbins.herokuapp.com/
+API_SECRET=89905a25dc7cb3a25c9314c0367810d3e3882d3c
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games
+* * * * * sudo wpa_cli scan
+* * * * * killall -g --older-than 15m openaps
+* * * * * cd /home/pi/openapsdev2 && oref0-reset-git
+* * * * * cd /home/pi/openapsdev2 && ps aux | grep -v grep | grep -q 'openaps get-bg' || ( date; openaps get-bg ; cat cgm/glucose.json | json -a sgv dateString | head -1 ) | tee -a /var/log/openaps/cgm-loop.log
+* * * * * cd /home/pi/openapsdev2 && ps aux | grep -v grep | grep -q 'openaps ns-loop' || openaps ns-loop | tee -a /var/log/openaps/ns-loop.log
+* * * * * cd /home/pi/openapsdev2 && ps aux | grep -v grep | grep -q 'openaps autosens' || openaps autosens | tee -a /var/log/openaps/autosens-loop.log
+* * * * * cd /home/pi/openapsdev2 && ( ps aux | grep -v grep | grep -q 'openaps pump-loop' || openaps pump-loop ) 2>&1 | tee -a /var/log/openaps/pump-loop.log
+# Check for wifi connectivity, and restart pi if there is an issue
+*/5 * * * * /usr/bin/sudo -H /usr/local/bin/checkwifi.sh >> /dev/null 2>&1
+# check battery level and reservoir level every hour, SMS if either is low
+0 * * * * (cd /home/pi/openapsdev2/Scripts/ && ./reservoir_battery_notifi$
+# Backup my crontab file (this one) and my aliases file to the openapsdev$
+0 * * * * crontab -l > ~/openapsdev2/cron_backup.txt; cp -f ~/.bashrc ~/o$
+# Ping google every minute for a keep-alive
+*/1 * * * * ping -c1 www.google.com >> /dev/null 2>&1
+

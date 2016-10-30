@@ -1,0 +1,1 @@
+Cannot GET //api/v1/treatments.json?find[created_at][$gte]=2016-10-30T04:00-0700&amp;find[eventType][$regex]=Target
